@@ -7,6 +7,15 @@
 
 ## How to run
 
+Create a ``.env`` file with the following content and place it at the root of the repository:
+
+```
+BOT_TOKEN=<YOUR_BOT_TOKEN>
+CHAT_ID=<YOUR_CHAT_ID>
+INTERVAL_MIN=5
+TICKERS_FILE=tickers.yaml
+```
+
 ### Using docker-compose
 
 Create the docker network (once only):
