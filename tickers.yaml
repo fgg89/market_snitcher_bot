@@ -3,3 +3,9 @@ tickers:
     currency: EUR
   - name: GOOGL
     currency: USD
+  - name: MSFT
+    currency: USD
+  - name: LOW
+    currency: USD
+  - name: GSY.TO
+    currency: CAD

@@ -1,0 +1,26 @@
+version: '3.4'
+services:
+  market_snitcher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fgg89/market_snitcher:v1
+    container_name: market_snitcher
+    restart: unless-stopped
+    networks:
+      - market_snitcher
+    volumes:
+      - type: bind
+        source: .
+        target: /opt/market_snitcher_bot
+    working_dir: /opt/market_snitcher_bot
+    environment:
+        - BOT_TOKEN=$BOT_TOKEN
+        - CHAT_ID=$CHAT_ID
+        - INTERVAL_MIN=$INTERVAL_MIN
+        - TICKERS_FILE=$TICKERS_FILE
+    command: ["python", "bot.py"]
+
+networks:
+  market_snitcher:
+    external: true
