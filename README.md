@@ -2,8 +2,8 @@
 
 ## Links
 
-https://schedule.readthedocs.io/en/stable/examples.html
-https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions---JobQueue
+* https://schedule.readthedocs.io/en/stable/examples.html
+* https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions---JobQueue
 
 ## How to run
 
