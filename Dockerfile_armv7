@@ -1,5 +1,6 @@
-FROM arm32v7/python:3.11
+FROM python:alpine3.18
 RUN apt update && apt upgrade -y
 RUN apt install -y git
+RUN pip install --upgrade pip
 RUN git clone https://github.com/fgg89/market_snitcher_bot.git /opt/market_snitcher_bot
 RUN cd /opt/market_snitcher_bot && pip install -Ur requirements.txt
