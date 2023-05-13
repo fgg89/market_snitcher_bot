@@ -18,17 +18,17 @@ logger = logging.getLogger(__name__)
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 INTERVAL_MIN = float(os.environ.get("INTERVAL_MIN", 0.15))
-TICKERS_FILE = os.environ.get("TICKERS_FILE", "tickers.yaml")
+DATA_FILE = os.environ.get("DATA_FILE", "data.yaml")
 START_TIME = os.environ.get("START_TIME", "09:00")
 END_TIME = os.environ.get("END_TIME", "20:00")
 LIMIT_WEEKDAY = os.environ.get("LIMIT_WEEKDAY", 7)
 ECB_URL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref.zip"
 SAVE_PATH = "./eurofxref.zip"
 
-with open(TICKERS_FILE, "r") as stream:
+with open(DATA_FILE, "r") as stream:
     try:
-        TICKERS = yaml.safe_load(stream)
-        logger.debug(TICKERS)
+        DATA = yaml.safe_load(stream)
+        logger.debug(DATA)
     except yaml.YAMLError as exc:
         logger.error(exc)
 
@@ -49,6 +49,7 @@ def get_exchange_rates(url, save_path, chunk_size=128):
 
 async def callback_scheduled(context: ContextTypes.DEFAULT_TYPE):
     # Get the current CEST time
+    # TODO: Make the timezone configurable
     tz = pytz.timezone("Europe/Madrid")
     current_time = datetime.now(tz).time()
     # Check if the current day is Monday to Friday (0-4) and the current time is between 9 AM and 6 PM
@@ -63,7 +64,7 @@ async def callback_scheduled(context: ContextTypes.DEFAULT_TYPE):
         get_exchange_rates(ECB_URL, SAVE_PATH)
         # Create the currency converter
         converter = CurrencyConverter(ECB_URL)
-        for index, ticker in enumerate(TICKERS["tickers"]):
+        for index, ticker in enumerate(DATA["stocks"]):
             if ticker["currency"] == "EUR":
                 current_price = get_stock_price(ticker["name"])
                 current_price_eur = current_price
@@ -94,11 +95,18 @@ async def callback_scheduled(context: ContextTypes.DEFAULT_TYPE):
                 + " %"
                 + "\n"
             )
-            stock_value = round(ticker["shares"] * current_price_eur, 2)
+            stock_value = ticker["shares"] * current_price_eur
             nav_today += stock_value
-            # Print NAV when after reaching the last item in the list
-            if index == len(TICKERS["tickers"]) - 1:
-                msg += "\n" + "<b>" + "NAV" + "</b>: " + str(nav_today) + " EUR"
+            total_stocks_invested = DATA["total_stocks_invested"]
+            twr_rate = ((nav_today - total_stocks_invested)/total_stocks_invested)*100
+            # twr = nav_today - total_stocks_invested
+            # forex = round(((DATA["forex"]["value"] - DATA["forex"]["cost_basis"])/DATA["forex"]["cost_basis"])*100, 2)
+            # forex = DATA["forex"]["value"] - DATA["forex"]["cost_basis"]
+            # Print total values of interest after reaching the last item in the list
+            if index == len(DATA["stocks"]) - 1:
+                msg += "\n" + "<b>" + "NAV" + "</b>: " + str(round(nav_today,2)) + " EUR"
+                msg += "\n" + "<b>" + "TWR" + "</b>: " + str(round(twr_rate,2)) + " %"
+
         await context.bot.send_message(chat_id=CHAT_ID, text=msg, parse_mode="HTML")
 
 
