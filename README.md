@@ -4,6 +4,7 @@
 
 * https://schedule.readthedocs.io/en/stable/examples.html
 * https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions---JobQueue
+* http://alexprengere.github.io/currencyconverter/
 
 ## How to run
 
@@ -25,6 +26,7 @@ docker network create market_snitcher
 ```
 
 ```
+docker-compose build --no-cache
 docker-compose --env-file .env up -d
 ```
 

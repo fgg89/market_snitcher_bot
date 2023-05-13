@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.11.3-bullseye
 RUN apt update && apt upgrade -y
 RUN apt install -y git
 RUN pip install --upgrade pip

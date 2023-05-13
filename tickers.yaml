@@ -1,11 +1,49 @@
 tickers:
   - name: NA9.DE
     currency: EUR
+    buy_price: 99.01
+    shares: 42
   - name: GOOGL
     currency: USD
-  - name: MSFT
-    currency: USD
-  - name: LOW
-    currency: USD
+    buy_price: 93.76
+    shares: 22
   - name: GSY.TO
     currency: CAD
+    buy_price: 93.03
+    shares: 32
+  - name: MSFT
+    currency: USD
+    buy_price: 224.85
+    shares: 3
+  - name: LOW
+    currency: USD
+    buy_price: 192.04
+    shares: 8
+  - name: TEP.PA
+    currency: EUR
+    buy_price: 156.36
+    shares: 20
+  - name: APR.WA
+    currency: PLN
+    buy_price: 18.05
+    shares: 250
+  - name: TMO
+    currency: USD
+    buy_price: 529.53
+    shares: 2
+  - name: CYB.MI
+    currency: EUR
+    buy_price: 5.89
+    shares: 100
+  - name: DOM.L
+    currency: GBP
+    buy_price: 3.12
+    shares: 650
+  - name: TEQ.ST
+    currency: SEK
+    buy_price: 180.61
+    shares: 120
+  - name: HTRO.ST
+    currency: SEK
+    buy_price: 85.06
+    shares: 270

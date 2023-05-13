@@ -3,7 +3,7 @@ services:
   market_snitcher:
     build:
       context: .
-      dockerfile: Dockerfile_armv7
+      dockerfile: Dockerfile_x86
     image: fgg89/market_snitcher:v1
     container_name: market_snitcher
     restart: unless-stopped
