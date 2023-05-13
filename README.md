@@ -5,6 +5,17 @@
 * https://schedule.readthedocs.io/en/stable/examples.html
 * https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions---JobQueue
 * http://alexprengere.github.io/currencyconverter/
+* https://ruanbekker.medium.com/how-to-create-arm-based-container-images-with-buildx-fe917d186824
+
+
+## Cross-compile image for armv7 (Raspberry Pi)
+
+```
+docker buildx create --name multi-arch --platform "linux/arm64,linux/amd64,linux/arm/v7" --driver "docker-container"
+docker buildx use multi-arch
+docker login
+docker buildx build --platform "linux/amd64,linux/arm64,linux/arm/v7" --tag <DOCKERHUB_REPO>/<IMAGE>:<TAG> --push .
+```
 
 ## How to run
 
@@ -15,6 +26,10 @@ BOT_TOKEN=<YOUR_BOT_TOKEN>
 CHAT_ID=<YOUR_CHAT_ID>
 INTERVAL_MIN=5
 TICKERS_FILE=tickers.yaml
+```
+
+```
+python bot.py
 ```
 
 ### Using docker-compose
