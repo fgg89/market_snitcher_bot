@@ -4,7 +4,7 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    image: fgg89/market_snitcher:v1
+    image: babadook89/market_snitcher:v1
     container_name: market_snitcher
     restart: unless-stopped
     networks:
