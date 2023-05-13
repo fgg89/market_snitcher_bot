@@ -26,6 +26,7 @@ docker network create market_snitcher
 ```
 
 ```
+docker-compose build --no-cache
 docker-compose --env-file .env up -d
 ```
 

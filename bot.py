@@ -33,11 +33,13 @@ def get_stock_price(ticker):
     current_price = _ticker["currentPrice"]
     return round(current_price, 2)
 
+
 def get_exchange_rates(url, save_path, chunk_size=128):
     r = requests.get(url, stream=True)
-    with open(save_path, 'wb') as fd:
+    with open(save_path, "wb") as fd:
         for chunk in r.iter_content(chunk_size=chunk_size):
             fd.write(chunk)
+
 
 async def callback_scheduled(context: ContextTypes.DEFAULT_TYPE):
     msg = ""
@@ -49,12 +51,17 @@ async def callback_scheduled(context: ContextTypes.DEFAULT_TYPE):
     for index, ticker in enumerate(TICKERS["tickers"]):
         if ticker["currency"] == "EUR":
             current_price = get_stock_price(ticker["name"])
+            current_price_eur = current_price
         elif ticker["currency"] == "GBP":
-            current_price = converter.convert((get_stock_price(ticker["name"]))/100, 'GBP', 'EUR')
-            ticker["buy_price"] = converter.convert(ticker["buy_price"], 'GBP', 'EUR')
+            current_price = get_stock_price(ticker["name"]) / 100
+            current_price_eur = converter.convert(
+                (get_stock_price(ticker["name"])) / 100, "GBP", "EUR"
+            )
         else:
-            current_price = converter.convert(get_stock_price(ticker["name"]), ticker["currency"], 'EUR')
-            ticker["buy_price"] = converter.convert(ticker["buy_price"], ticker["currency"], 'EUR')
+            current_price = get_stock_price(ticker["name"])
+            current_price_eur = converter.convert(
+                (get_stock_price(ticker["name"])), ticker["currency"], "EUR"
+            )
         delta = current_price - ticker["buy_price"]
         diff = round((delta / ticker["buy_price"]) * 100, 2)
         msg += (
@@ -66,16 +73,16 @@ async def callback_scheduled(context: ContextTypes.DEFAULT_TYPE):
             + " "
             + ticker["currency"]
             + " | "
-            + "<b>" 
+            + "<b>"
             + str(round(diff, 2))
             + "</b>"
             + " %"
             + "\n"
         )
-        stock_value = round(ticker["shares"] * current_price, 2)
-        nav_today += stock_value 
+        stock_value = round(ticker["shares"] * current_price_eur, 2)
+        nav_today += stock_value
         # Print NAV when after reaching the last item in the list
-        if index == len(TICKERS["tickers"]) -1:
+        if index == len(TICKERS["tickers"]) - 1:
             msg += "\n" + "<b>" + "NAV" + "</b>: " + str(nav_today) + " EUR"
     await context.bot.send_message(chat_id=CHAT_ID, text=msg, parse_mode="HTML")
 
@@ -86,4 +93,3 @@ job_scheduled = job_queue.run_repeating(
     callback_scheduled, interval=60 * INTERVAL_MIN, first=0
 )
 application.run_polling()
-            
