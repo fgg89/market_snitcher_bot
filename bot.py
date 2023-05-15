@@ -97,9 +97,9 @@ async def callback_scheduled(context: ContextTypes.DEFAULT_TYPE):
             total_stocks_invested = DATA["total_stocks_invested"]
             twr_rate = ((nav_today - total_stocks_invested)/total_stocks_invested)*100
             # Print total values of interest after reaching the last item in the list
-            if index == len(DATA["stocks"]) - 1:
-                msg += "\n" + "<b>" + "NAV" + "</b>: " + str(round(nav_today,2)) + " EUR"
-                msg += "\n" + "<b>" + "TWR" + "</b>: " + str(round(twr_rate,2)) + " %"
+            # if index == len(DATA["stocks"]) - 1:
+            #     msg += "\n" + "<b>" + "NAV" + "</b>: " + str(round(nav_today,2)) + " EUR"
+            #     msg += "\n" + "<b>" + "TWR" + "</b>: " + str(round(twr_rate,2)) + " %"
 
         await context.bot.send_message(chat_id=CHAT_ID, text=msg, parse_mode="HTML")
 
