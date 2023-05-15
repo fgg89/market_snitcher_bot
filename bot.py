@@ -21,7 +21,7 @@ INTERVAL_MIN = float(os.environ.get("INTERVAL_MIN", 0.15))
 DATA_FILE = os.environ.get("DATA_FILE", "data.yaml")
 START_TIME = os.environ.get("START_TIME", "08:00")
 END_TIME = os.environ.get("END_TIME", "23:00")
-LIMIT_WEEKDAY = os.environ.get("LIMIT_WEEKDAY", 7)
+LIMIT_WEEKDAY = int(os.environ.get("LIMIT_WEEKDAY", 7))
 ECB_URL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref.zip"
 SAVE_PATH = "./eurofxref.zip"
 
@@ -33,12 +33,13 @@ with open(DATA_FILE, "r") as stream:
         logger.error(exc)
 
 
-def get_stock_price(ticker):
+def get_stock_info(ticker):
     _ticker = yf.Ticker(ticker).info
     logger.debug(_ticker)
-    current_price = _ticker["currentPrice"]
-    return round(current_price, 2)
-
+    return _ticker
+    # current_price = _ticker["currentPrice"]
+    # return round(current_price, 2)
+    
 
 def get_exchange_rates(url, save_path, chunk_size=128):
     r = requests.get(url, stream=True)
@@ -65,19 +66,15 @@ async def callback_scheduled(context: ContextTypes.DEFAULT_TYPE):
         # Create the currency converter
         converter = CurrencyConverter(ECB_URL)
         for index, ticker in enumerate(DATA["stocks"]):
-            if ticker["currency"] == "EUR":
-                current_price = get_stock_price(ticker["name"])
+            current_price = round(get_stock_info(ticker["name"])["currentPrice"], 2)
+            currency = (get_stock_info(ticker["name"])["currency"]).upper()
+            if currency == "EUR":
                 current_price_eur = current_price
-            elif ticker["currency"] == "GBP":
-                current_price = get_stock_price(ticker["name"]) / 100
-                current_price_eur = converter.convert(
-                    (get_stock_price(ticker["name"])) / 100, "GBP", "EUR"
-                )
+            elif currency == "GBP":
+                current_price = current_price / 100
+                current_price_eur = converter.convert(current_price, currency, "EUR")
             else:
-                current_price = get_stock_price(ticker["name"])
-                current_price_eur = converter.convert(
-                    (get_stock_price(ticker["name"])), ticker["currency"], "EUR"
-                )
+                current_price_eur = converter.convert(current_price, currency, "EUR")
             delta = current_price - ticker["buy_price"]
             diff = round((delta / ticker["buy_price"]) * 100, 2)
             msg += (
@@ -87,7 +84,7 @@ async def callback_scheduled(context: ContextTypes.DEFAULT_TYPE):
                 + " | "
                 + str(round(current_price, 2))
                 + " "
-                + ticker["currency"]
+                + currency
                 + " | "
                 + "<b>"
                 + str(round(diff, 2))
@@ -99,9 +96,6 @@ async def callback_scheduled(context: ContextTypes.DEFAULT_TYPE):
             nav_today += stock_value
             total_stocks_invested = DATA["total_stocks_invested"]
             twr_rate = ((nav_today - total_stocks_invested)/total_stocks_invested)*100
-            # twr = nav_today - total_stocks_invested
-            # forex = round(((DATA["forex"]["value"] - DATA["forex"]["cost_basis"])/DATA["forex"]["cost_basis"])*100, 2)
-            # forex = DATA["forex"]["value"] - DATA["forex"]["cost_basis"]
             # Print total values of interest after reaching the last item in the list
             if index == len(DATA["stocks"]) - 1:
                 msg += "\n" + "<b>" + "NAV" + "</b>: " + str(round(nav_today,2)) + " EUR"
